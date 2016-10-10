@@ -112,6 +112,9 @@ unsafe impl Sync for nsStyleImageLayers_Layer {}
 use gecko_bindings::structs::nsStyleImageLayers_LayerType;
 unsafe impl Send for nsStyleImageLayers_LayerType {}
 unsafe impl Sync for nsStyleImageLayers_LayerType {}
+use gecko_bindings::structs::nsStyleImageRequest;
+unsafe impl Send for nsStyleImageRequest {}
+unsafe impl Sync for nsStyleImageRequest {}
 use gecko_bindings::structs::nsStyleList;
 unsafe impl Send for nsStyleList {}
 unsafe impl Sync for nsStyleList {}
@@ -177,6 +180,22 @@ extern "C" {
 extern "C" {
     pub fn Gecko_ClearPODTArray(aArray: *mut ::std::os::raw::c_void,
                                 aElementSize: usize, aElementAlign: usize);
+}
+pub type ThreadSafePrincipalHolder = nsMainThreadPtrHolder<nsIPrincipal>;
+extern "C" {
+    pub fn Gecko_AddRefPrincipalArbitraryThread(aPtr:
+                                                    *mut ThreadSafePrincipalHolder);
+}
+extern "C" {
+    pub fn Gecko_ReleasePrincipalArbitraryThread(aPtr:
+                                                     *mut ThreadSafePrincipalHolder);
+}
+pub type ThreadSafeURIHolder = nsMainThreadPtrHolder<nsIURI>;
+extern "C" {
+    pub fn Gecko_AddRefURIArbitraryThread(aPtr: *mut ThreadSafeURIHolder);
+}
+extern "C" {
+    pub fn Gecko_ReleaseURIArbitraryThread(aPtr: *mut ThreadSafeURIHolder);
 }
 extern "C" {
     pub fn Gecko_ChildrenCount(node: RawGeckoNodeBorrowed) -> u32;
@@ -424,6 +443,13 @@ extern "C" {
                                        gradient: *mut nsStyleGradient);
 }
 extern "C" {
+    pub fn Gecko_SetUrlImageValue(image: *mut nsStyleImage,
+                                  url_bytes: *const u8, url_length: u32,
+                                  base_uri: *mut ThreadSafeURIHolder,
+                                  referrer: *mut ThreadSafeURIHolder,
+                                  principal: *mut ThreadSafePrincipalHolder);
+}
+extern "C" {
     pub fn Gecko_CopyImageValueFrom(image: *mut nsStyleImage,
                                     other: *const nsStyleImage);
 }
@@ -431,22 +457,6 @@ extern "C" {
     pub fn Gecko_CreateGradient(shape: u8, size: u8, repeating: bool,
                                 legacy_syntax: bool, stops: u32)
      -> *mut nsStyleGradient;
-}
-pub type ThreadSafePrincipalHolder = nsMainThreadPtrHolder<nsIPrincipal>;
-extern "C" {
-    pub fn Gecko_AddRefPrincipalArbitraryThread(aPtr:
-                                                    *mut ThreadSafePrincipalHolder);
-}
-extern "C" {
-    pub fn Gecko_ReleasePrincipalArbitraryThread(aPtr:
-                                                     *mut ThreadSafePrincipalHolder);
-}
-pub type ThreadSafeURIHolder = nsMainThreadPtrHolder<nsIURI>;
-extern "C" {
-    pub fn Gecko_AddRefURIArbitraryThread(aPtr: *mut ThreadSafeURIHolder);
-}
-extern "C" {
-    pub fn Gecko_ReleaseURIArbitraryThread(aPtr: *mut ThreadSafeURIHolder);
 }
 extern "C" {
     pub fn Gecko_SetMozBinding(style_struct: *mut nsStyleDisplay,
